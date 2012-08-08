@@ -1,0 +1,21 @@
+path.allArea {
+    fill: steelblue;
+}
+
+path.homeArea {
+    fill: powderblue;
+}
+
+path.awayArea {
+    fill: lightskyblue;
+}
+
+.axis text {
+    font: 10px sans-serif;
+}
+
+.axis path, .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      Penalties in the Premier League
+    </title>
+    <script src="js/d3.v2.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+  </head>
+  <body>
+    <script type="text/javascript">
+  var margin = {top: 40, right: 40, bottom: 40, left: 40},
+width = 960,
+height = 500;
+
+function yearFromSeason(season) {
+  return +(season.split("-")[0]) + 1;
+};
+
+d3.csv("penalties.csv", function(data) {
+  data.forEach(function(d) {
+    d.For = +d.For;
+    d.Season = yearFromSeason(d.Season);
+  });
+
+  var x = d3.time.scale()
+    .range([0, width - margin.left - margin.right])
+    .domain(d3.extent(data, function(d) { return d.Season; }));
+
+  var y = d3.scale.linear()
+    .range([height - margin.top - margin.bottom, 0])
+    .domain([0, d3.max(data, function(d) { return d.For; })]).nice();
+
+  var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom")
+    .tickFormat (d3.format ("d"))
+    .tickPadding(8);
+
+  var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("right")
+    .tickPadding(8);
+
+  var allPeanltiesArea = d3.svg.area()
+    .x(function(d) { return x(d.Season); })
+    .y0(y.range()[0])
+    .y1(function(d) { return y(d.For); });
+
+  var homePenaltiesArea = d3.svg.area()
+    .x(function(d) { return x(d.Season); })
+    .y0(y.range()[0])
+    .y1(function(d) { return y(d.Home); });
+
+  var awayPenaltiesArea = d3.svg.area()
+    .x(function(d) { return x(d.Season); })
+    .y0(y.range()[0])
+    .y1(function(d) { return y(d.Away); });
+
+  var svg = d3.select("body").append("svg")
+    .datum(data)
+    .attr("width", width)
+    .attr("height", height)
+    .attr("class", "time chart")
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + y.range()[0] + ")")
+    .call(xAxis);
+
+  svg.append("g")
+    .attr("class", "y axis")
+    .attr("transform", "translate(" + x.range()[1] + ")")
+    .call(yAxis);
+
+  svg.append("path")
+    .attr("class", "allArea")
+    .attr("d", allPeanltiesArea);
+
+  svg.append("path")
+    .attr("class", "homeArea")
+    .attr("d", homePenaltiesArea);
+
+  svg.append("path")
+    .attr("class", "awayArea")
+    .attr("d", awayPenaltiesArea);
+});
+    </script>
+  </body>
+</html>
